@@ -6,6 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "ATreasureChest.generated.h"
 
+
+class UBoxComponent;
+class UStaticMeshComponent;
+class UPrimitiveComponent;
+
 UCLASS()
 class GAME206_E2_API AATreasureChest : public AActor
 {
@@ -14,13 +19,36 @@ class GAME206_E2_API AATreasureChest : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AATreasureChest();
+	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
+	// True once its used
+	UPROPERTY()
+	bool bCollected;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	
+	// Called when chest is collected
+	UFUNCTION()
+	void Collected();
+	
+	// Overlap Func
+	UFUNCTION()
+	void OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent,
+										AActor* OtherActor,
+										UPrimitiveComponent* OtherComp,
+										int32 OtherBodyIndex,
+										bool bFromSweep,
+										const FHitResult& SweepResult);
+	
+	// Mesh
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent>TreasureChest_StaticMesh;
+	
+	// Collision Box
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UBoxComponent> TreasureChest_BoxComponent;
 };
