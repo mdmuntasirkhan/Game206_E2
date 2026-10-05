@@ -23,8 +23,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
+	// Network communication
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	// True once its used
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	bool bCollected;
 
 protected:

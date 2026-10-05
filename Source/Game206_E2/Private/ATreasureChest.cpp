@@ -6,12 +6,16 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Character.h"
 #include "Engine/Engine.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AATreasureChest::AATreasureChest()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	// Make it available over the network
+	bReplicates = true;
 
 	// Treasure Chest starts closed
 	bCollected = false;
@@ -63,9 +67,21 @@ void AATreasureChest::Collected()
 	}
 }
 
+//
+void AATreasureChest::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(AATreasureChest, bCollected);
+}
+
 // Overlapping Func
 void AATreasureChest::OnBeginOverlapComponentEvent(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// Server control
+	if (!HasAuthority())
+		return;
+		
 	//
 	if (Cast<ACharacter>(OtherActor))
 	{
